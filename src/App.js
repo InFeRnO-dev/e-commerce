@@ -1,24 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
+import React, { useState } from 'react';
+import { isConnected } from './services/userService';
+import Footer from "./components/footer/footer";
+import Header from './components/header/header';
+import About from "./pages/about";
+import Contact from "./pages/contact";
+import Home from "./pages/home";
+import Product from "./pages/product";
+import Login from "./pages/login";
+import AllProduct from "./pages/allProduct";
+import Cart from "./pages/cart";
+import Address from "./pages/address";
+import Recap from "./pages/recap";
 
-function App() {
+export const AuthContext = React.createContext({
+  isConnected: false,
+  setConnected: (value) => {}
+})
+
+function App(props) {
+  const [auth, setauth] = useState(isConnected())
+  const contextValue = {
+    isConnected: auth,
+    setConnected: setauth
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <>
+        <AuthContext.Provider value={contextValue}>
+          <Router>
+            <Header />
+
+              <Switch>
+                <Route path="/login" component={Login}/>
+                <Route path="/cart/recap" component={Recap}/>
+                <Route path="/cart/adresses" component={Address}/>
+                <Route path="/cart" component={Cart}/>
+                <Route path="/about" component={About}/>
+                <Route path="/contact" component={Contact}/>
+                <Route path="/:slugcategory/:slugsubcategory/:id" component={Product}/>
+                <Route path="/:slugcategory/:slugsubcategory" component={AllProduct}/>
+                <Route path="/:slugcategory" component={AllProduct}/>
+                <Route path="/" component={Home}/>
+              </Switch>
+            
+            <Footer />
+          </Router>
+        </AuthContext.Provider>
+      </>
   );
 }
 
